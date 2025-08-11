@@ -1,0 +1,103 @@
+# Genealogy Text Processor Configuration
+
+# Pipeline configuration
+pipeline:
+  input_dir: "data/input"           # Directory containing raw OCR files
+  output_dir: "data/output"         # Directory for final results
+  intermediate_dir: "data/intermediate"  # Directory for intermediate files
+  encoding: "utf-8"                 # File encoding
+
+# File merger configuration
+merger:
+  # Multiple regex patterns for parsing filenames (tried in order)
+  # Supports both complex multi-column files and simple page-only files
+  filename_patterns:
+    # Primary: Full pattern with side and column (e.g., Wang2017_Page_001_right_border_col5_final.txt)
+    - pattern: ".*_Page_(\\d+)_([a-z]+).*_col(\\d+)"
+      type: "full"
+      description: "Full pattern with page, side, and column"
+    
+    # Fallback 1: Page with side but no column (e.g., Doc_Page_001_left_enhanced.txt)
+    - pattern: ".*_Page_(\\d+)_([a-z]+)_"
+      type: "page_side"
+      description: "Page and side without column"
+    
+    # Fallback 2: Simple page-only pattern (e.g., Shu_Page_087_x2_enhanced_full_refined_deskewed.txt)
+    - pattern: ".*_Page_(\\d+)_"
+      type: "page_only"
+      description: "Simple page number only"
+  
+  # Legacy single pattern support (will be converted to patterns list internally)
+  filename_pattern: null  # Set to a string to use legacy single-pattern mode
+  
+  output_file: "merged_text.txt"    # Output filename in intermediate directory
+  
+# Text cleaner configuration  
+cleaner:
+  noise_threshold: 0.2             # Maximum ratio of noise characters (0-1)
+  keywords_file: null               # Optional: Path to custom keywords file
+  output_file: "cleaned_text.txt"   # Output filename in intermediate directory
+  save_stats: true                  # Save cleaning statistics
+  
+# Genealogy parser configuration
+parser:
+  # LLM Provider configuration
+  provider: "openai"                # Provider: openai, gemini, litellm (recommended)
+  model: "gpt-4o-mini"                   # Using GPT-5 for highest quality parsing (PhD-level expertise)
+  
+  # Model options by provider (as of August 2025):
+  # OpenAI: gpt-5 (PhD-level, 45% fewer errors), gpt-5-mini (lightweight), gpt-5-nano (ultra-fast), gpt-4o, gpt-4o-mini
+  # Gemini: gemini-2.5-flash (recommended), gemini-2.5-pro, gemini-2.5-flash-lite
+  # LiteLLM: Any model from supported providers (prefix with provider/)
+  #   Examples: gemini/gemini-2.5-flash, claude-3-opus-20240229
+  
+  temperature: 0.2                  # Model temperature (0.0-2.0, lower = more deterministic)
+  
+  # GPT-5 specific parameters (August 2025)
+  reasoning_effort: "medium"        # GPT-5: minimal, low, medium (default), high
+  
+  # Common parameters
+  use_function_calling: true        # Enable function calling (GPT-5 supports it)
+  chunk_size: 3                     # Lines to process per API call (reduced for GPT-5 stability)
+  context_size: 6                   # Lines from previous chunk to include as context (reduced for GPT-5)
+  max_retries: 2                    # Maximum retry attempts for API calls
+  retry_delay: 30                   # Delay between retries (seconds)
+  # max_tokens: 4096                # Removed - let each LLM provider use its default
+  output_file: "genealogy_data.json" # Output filename in output directory
+  output_file_parallel: "genealogy_data_parallel.json" # Output filename for parallel processing
+  use_model_specific_output: true   # Save outputs as genealogy_data_{provider}_{model}.json
+  save_intermediate: true           # Save results after each chunk (recommended)
+  checkpoint_dir: null              # Directory for checkpoints (null = auto)
+  
+  # Record merging settings
+  merge_updates: false               # Merge records with is_update_for_previous flag (set to false to disable)
+  
+  # Parallel processing settings
+  use_parallel: false                # Enable parallel processing (faster but uses more API calls)
+  max_workers: 3                     # Maximum concurrent API calls (reduced for safety)
+  # Note: context_size is used for both sequential and parallel modes now (standardized)
+  requests_per_minute: 30            # Rate limit: max requests per minute (conservative)
+  auto_adjust_workers: true          # Automatically reduce workers when hitting rate limits
+  slow_start: true                   # Start with 1 worker and gradually increase to max_workers
+  min_request_interval: 1.0          # Minimum seconds between ANY API calls
+  tokens_per_minute: 25000           # Conservative token limit (actual OpenAI limit is 30k)
+  
+# Logging configuration
+logging:
+  level: "INFO"                     # Log level: DEBUG, INFO, WARNING, ERROR
+  log_dir: "logs"                   # Directory for log files
+  console: true                     # Log to console
+  file: true                        # Log to file
+  colored: true                     # Use colored console output
+
+# Additional configuration can be added here
+# Environment variables can override these settings:
+# - GENEALOGY_INPUT_DIR
+# - GENEALOGY_OUTPUT_DIR
+# - GENEALOGY_PROVIDER (llm provider: openai, gemini, litellm)
+# - GENEALOGY_MODEL
+# - GENEALOGY_TEMPERATURE
+# - GENEALOGY_LOG_LEVEL
+# - OPENAI_API_KEY (for OpenAI/LiteLLM)
+# - GEMINI_API_KEY or GOOGLE_API_KEY (for Gemini)
+# - ANTHROPIC_API_KEY (for Claude via LiteLLM)

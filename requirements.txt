@@ -1,0 +1,18 @@
+# Core dependencies
+openai>=1.0.0
+PyYAML>=6.0.1
+litellm>=1.40.0  # Unified API for multiple LLM providers
+google-generativeai>=0.8.0  # Google Gemini API client
+
+# Optional dependencies for development
+pytest>=7.4.0
+pytest-cov>=4.1.0
+black>=23.0.0
+flake8>=6.0.0
+mypy>=1.5.0
+
+# Optional for enhanced features
+python-dotenv>=1.0.0  # For .env file support
+pydantic>=2.0.0  # For data validation with function calling
+tqdm>=4.66.0  # For progress bars
+colorama>=0.4.6  # For colored output on Windows

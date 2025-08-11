@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "genealogy.schema.json",
+  "version": "1.0.0",
+  "title": "GenealogyExtraction",
+  "description": "Schema for extracting structured genealogy records from Chinese family tree text",
+  "type": "object",
+  "properties": {
+    "records": {
+      "type": "array",
+      "description": "Array of genealogy records, one per line of text",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": ["string", "null"],
+            "description": "The main person described in the line"
+          },
+          "sex": {
+            "type": ["string", "null"],
+            "enum": ["male", "female", null],
+            "description": "Sex of the person (male, female, or null if unknown)"
+          },
+          "father": {
+            "type": ["string", "null"],
+            "description": "The father's name, inferred from context"
+          },
+          "birth_order": {
+            "type": ["integer", "null"],
+            "description": "Birth order number if mentioned (e.g., 1 for 長子, 2 for 次子)",
+            "minimum": 1
+          },
+          "courtesy": {
+            "type": ["string", "null"],
+            "description": "The person's courtesy name (字)"
+          },
+          "birth_time": {
+            "type": ["string", "null"],
+            "description": "Birth time information including dynasty, year, and potentially month, day, and hour (e.g., 明嘉靖二十年辛丑十月十二日寅時)"
+          },
+          "death_time": {
+            "type": ["string", "null"],
+            "description": "Death time information including dynasty, year, and potentially month, day, and hour (e.g., 萬歷二十七年己亥八月十九日午時)"
+          },
+          "children": {
+            "type": "array",
+            "description": "Array of children with order and name (use empty array if no children)",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "order": {
+                  "type": ["integer", "null"],
+                  "description": "Birth order number",
+                  "minimum": 1
+                },
+                "name": {
+                  "type": ["string", "null"],
+                  "description": "Child's name"
+                },
+                "sex": {
+                  "type": ["string", "null"],
+                  "enum": ["male", "female", null],
+                  "description": "Sex of the child (male, female, or null if unknown)"
+                }
+              },
+              "required": ["order", "name", "sex"]
+            }
+          },
+          "info": {
+            "type": ["string", "null"],
+            "description": "ALL biographical details from THIS line"
+          },
+          "original_text": {
+            "type": "string",
+            "description": "The original, unmodified line of text"
+          },
+          "note": {
+            "type": ["string", "null"],
+            "description": "Reasoning for the interpretation"
+          },
+          "is_update_for_previous": {
+            "type": ["boolean", "null"],
+            "description": "True if this line only adds info to previous person"
+          },
+          "skip": {
+            "type": "boolean",
+            "description": "True if this line should be skipped (noise/title), false for valid records"
+          }
+        },
+        "required": [
+          "name",
+          "sex",
+          "father",
+          "birth_order",
+          "courtesy",
+          "birth_time",
+          "death_time",
+          "children",
+          "info",
+          "original_text",
+          "note",
+          "is_update_for_previous",
+          "skip"
+        ]
+      }
+    }
+  },
+  "required": ["records"],
+  "additionalProperties": false
+}

@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# Development
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Project specific
+data/*
+logs/*
+!data/input/.gitkeep
+!data/intermediate/.gitkeep
+!data/output/.gitkeep
+!logs/.gitkeep
+
+# Environment
+.env
+config/.env
+
+# Temporary files
+*.tmp
+*.bak
+*.log
+response_error.txt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Keep test data
+!tests/sample_data/
