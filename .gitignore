@@ -28,7 +28,9 @@ build/
 *~
 
 # Project specific
-data/*
+data/input/*
+data/intermediate/*
+data/output/*
 logs/*
 !data/input/.gitkeep
 !data/intermediate/.gitkeep
